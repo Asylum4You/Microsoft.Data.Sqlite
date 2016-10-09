@@ -290,7 +290,7 @@ namespace Microsoft.Data.Sqlite
                     return Cache;
 
                 default:
-                    Debug.Fail("Unexpected keyword: " + index);
+                    Debug.Assert(false, "Unexpected keyword: " + index);
                     return null;
             }
         }
@@ -323,7 +323,7 @@ namespace Microsoft.Data.Sqlite
                     return;
 
                 default:
-                    Debug.Fail("Unexpected keyword: " + index);
+                    Debug.Assert(false, "Unexpected keyword: " + index);
                     return;
             }
         }

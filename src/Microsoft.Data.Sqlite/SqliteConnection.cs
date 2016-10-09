@@ -225,7 +225,8 @@ namespace Microsoft.Data.Sqlite
                 && !filename.Equals(":memory:", StringComparison.OrdinalIgnoreCase)
                 && !Path.IsPathRooted(filename))
             {
-                filename = Path.GetFullPath(Path.Combine(BaseDirectory, filename));
+                throw new Exception("Full path to filename required");
+                //filename = Path.GetFullPath(Path.Combine(BaseDirectory, filename));
             }
 
             var rc = NativeMethods.sqlite3_open_v2(filename, out _db, flags, vfs: null);
@@ -233,7 +234,7 @@ namespace Microsoft.Data.Sqlite
 
             SetState(ConnectionState.Open);
         }
-
+/*
 #if !NET451
         private static string BaseDirectory
             => Environment.GetEnvironmentVariable("ADONET_DATA_DIR")
@@ -244,7 +245,7 @@ namespace Microsoft.Data.Sqlite
             => AppDomain.CurrentDomain.GetData("DataDirectory") as string
                 ?? AppDomain.CurrentDomain.BaseDirectory;
 #endif
-
+*/
         /// <summary>
         /// Closes the connection to the database. Open transactions are rolled back.
         /// </summary>
