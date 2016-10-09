@@ -452,7 +452,18 @@ namespace Microsoft.Data.Sqlite
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the column.</returns>
         public override Guid GetGuid(int ordinal)
-            => new Guid(GetBlob(ordinal));
+        {
+            var blob = GetBlob(ordinal);
+            if (blob.Length == 16)
+            {
+                return new Guid(blob);
+            }
+            else
+            {
+                var guidStr = System.Text.Encoding.UTF8.GetString(blob, 0, blob.Length);
+                return new Guid(guidStr);
+            }
+        }
 
         /// <summary>
         /// Gets the value of the specified column as a <see cref="short" />.
@@ -683,7 +694,7 @@ namespace Microsoft.Data.Sqlite
             return i;
         }
 
-        private byte[] GetBlob(int ordinal)
+        public byte[] GetBlob(int ordinal)
         {
             if (IsDBNull(ordinal))
             {
