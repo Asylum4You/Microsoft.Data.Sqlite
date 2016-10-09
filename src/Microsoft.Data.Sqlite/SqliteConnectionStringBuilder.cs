@@ -23,12 +23,16 @@ namespace Microsoft.Data.Sqlite
         private const string ModeKeyword = "Mode";
         private const string CacheKeyword = "Cache";
         private const string FilenameKeyword = "Filename";
+        private const string JournalModeKeyword = "Journal Mode";
+        private const string SynchronousKeyword = "Synchronous";
 
         private enum Keywords
         {
             DataSource,
             Mode,
-            Cache
+            Cache,
+            JournalMode,
+            Synchronous
         }
 
         private static readonly IReadOnlyList<string> _validKeywords;
@@ -37,13 +41,17 @@ namespace Microsoft.Data.Sqlite
         private string _dataSource = string.Empty;
         private SqliteOpenMode _mode = SqliteOpenMode.ReadWriteCreate;
         private SqliteCacheMode _cache = SqliteCacheMode.Default;
+        private SqliteJournalMode _journalMode = SqliteJournalMode.Delete;
+        private SqliteSynchronousMode _syncMode = SqliteSynchronousMode.Normal;
 
         static SqliteConnectionStringBuilder()
         {
-            var validKeywords = new string[3];
+            var validKeywords = new string[5];
             validKeywords[(int)Keywords.DataSource] = DataSourceKeyword;
             validKeywords[(int)Keywords.Mode] = ModeKeyword;
             validKeywords[(int)Keywords.Cache] = CacheKeyword;
+            validKeywords[(int)Keywords.JournalMode] = JournalModeKeyword;
+            validKeywords[(int)Keywords.Synchronous] = SynchronousKeyword;
             _validKeywords = validKeywords;
 
             _keywords = new Dictionary<string, Keywords>(3, StringComparer.OrdinalIgnoreCase)
@@ -51,6 +59,8 @@ namespace Microsoft.Data.Sqlite
                 [DataSourceKeyword] = Keywords.DataSource,
                 [ModeKeyword] = Keywords.Mode,
                 [CacheKeyword] = Keywords.Cache,
+                [JournalModeKeyword] = Keywords.JournalMode,
+                [SynchronousKeyword] = Keywords.Synchronous,
 
                 // aliases
                 [FilenameKeyword] = Keywords.DataSource,
@@ -133,6 +143,28 @@ namespace Microsoft.Data.Sqlite
         }
 
         /// <summary>
+        /// Gets or sets the journal mode used by the connection.
+        /// </summary>
+        /// <value>The journal mode used by the connection</value>
+        /// <seealso href="https://www.sqlite.org/tempfiles.html">Temporary Files Used By SQLite</seealso>
+        public virtual SqliteJournalMode JournalMode
+        {
+            get { return _journalMode; }
+            set { base[JournalModeKeyword] = _journalMode = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the synchronous mode used by the connection.
+        /// </summary>
+        /// <value>The synchronous mode used by the connection.</value>
+        /// <seealso href="https://www.sqlite.org/pragma.html#pragma_synchronous"/>
+        public virtual SqliteSynchronousMode Synchronous
+        {
+            get { return _syncMode; }
+            set { base[SynchronousKeyword] = _syncMode = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the value associated with the specified key.
         /// </summary>
         /// <param name="keyword">The key.</param>
@@ -161,6 +193,14 @@ namespace Microsoft.Data.Sqlite
 
                     case Keywords.Cache:
                         Cache = ConvertToEnum<SqliteCacheMode>(keyword, value);
+                        return;
+
+                    case Keywords.JournalMode:
+                        JournalMode = ConvertToEnum<SqliteJournalMode>(keyword, value);
+                        return;
+
+                    case Keywords.Synchronous:
+                        Synchronous = ConvertToEnum<SqliteSynchronousMode>(keyword, value);
                         return;
 
                     default:
@@ -289,6 +329,12 @@ namespace Microsoft.Data.Sqlite
                 case Keywords.Cache:
                     return Cache;
 
+                case Keywords.JournalMode:
+                    return JournalMode;
+
+                case Keywords.Synchronous:
+                    return Synchronous;
+
                 default:
                     Debug.Assert(false, "Unexpected keyword: " + index);
                     return null;
@@ -320,6 +366,14 @@ namespace Microsoft.Data.Sqlite
 
                 case Keywords.Cache:
                     _cache = SqliteCacheMode.Default;
+                    return;
+
+                case Keywords.JournalMode:
+                    _journalMode = SqliteJournalMode.Off;
+                    return;
+
+                case Keywords.Synchronous:
+                    _syncMode = SqliteSynchronousMode.Normal;
                     return;
 
                 default:

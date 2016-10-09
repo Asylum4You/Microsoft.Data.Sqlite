@@ -58,9 +58,11 @@
     <Compile Include="SqliteDataReader.cs" />
     <Compile Include="SqliteException.cs" />
     <Compile Include="SqliteFactory.cs" />
+    <Compile Include="SqliteJournalMode.cs" />
     <Compile Include="SqliteOpenMode.cs" />
     <Compile Include="SqliteParameter.cs" />
     <Compile Include="SqliteParameterCollection.cs" />
+    <Compile Include="SqliteSynchronousMode.cs" />
     <Compile Include="SqliteTransaction.cs" />
     <Compile Include="SqliteType.cs" />
     <Compile Include="Properties\Strings.Designer.cs" />
